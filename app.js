@@ -15,4 +15,31 @@ $('backup').onclick=()=>download('squawk-backup.json',JSON.stringify({format:'sq
 let importType='csv';$('import').onclick=()=>{importType='csv';$('file').accept='.csv';$('file').click();};$('restore').onclick=()=>{importType='json';$('file').accept='.json';$('file').click();};
 $('file').onchange=async event=>{const file=event.target.files?.[0];if(!file)return;try{const incoming=importType==='csv'?parseCSV(await file.text()):parseBackup(await file.text());if(incoming.length>1000)throw Error('Maximum 1000 channels');if(confirm('Replace the current channel list with '+incoming.length+' imported channels?')){channels=incoming;render();}}catch(e){alert('Import failed: '+e.message);}event.target.value='';};
 $('connect').onclick=async()=>{if(!('serial' in navigator)){alert('Web Serial is unavailable. Use a supported desktop Chromium browser on HTTPS or localhost.');return;}try{const port=await navigator.serial.requestPort();$('connection').textContent='USB port selected. No radio handshake or read/write capability is implemented yet.';await port.close().catch(()=>{});}catch(e){if(e.name!=='NotFoundError')alert('Port selection failed: '+e.message);}};
+
+const selector=$('radio-model');
+for(const item of MODELS){
+  const option=document.createElement('option');
+  option.value=item.id;
+  option.textContent=item.name;
+  selector.append(option);
+}
+selector.value=model;
+function displayModel(){
+  const selected=MODELS.find(item=>item.id===model);
+  $('model-name').textContent=selected.name;
+  $('programming-model').textContent=selected.name;
+  $('connection').textContent='No serial connection. Hardware programming is not yet supported.';
+}
+selector.addEventListener('change',()=>{
+  model=selector.value;
+  localStorage.setItem('squawk-selected-model-v1',model);
+  key=channelKey(model);
+  channels=readChannels();
+  displayModel();
+  refreshProfiles();
+  $('profiles').value='';
+  render();
+});
+displayModel();
+refreshProfiles();
 render();
