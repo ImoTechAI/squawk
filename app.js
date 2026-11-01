@@ -16,6 +16,49 @@ let importType='csv';$('import').onclick=()=>{importType='csv';$('file').accept=
 $('file').onchange=async event=>{const file=event.target.files?.[0];if(!file)return;try{const incoming=importType==='csv'?parseCSV(await file.text()):parseBackup(await file.text());if(incoming.length>1000)throw Error('Maximum 1000 channels');if(confirm('Replace the current channel list with '+incoming.length+' imported channels?')){channels=incoming;render();}}catch(e){alert('Import failed: '+e.message);}event.target.value='';};
 $('connect').onclick=async()=>{if(!('serial' in navigator)){alert('Web Serial is unavailable. Use a supported desktop Chromium browser on HTTPS or localhost.');return;}try{const port=await navigator.serial.requestPort();$('connection').textContent='USB port selected. No radio handshake or read/write capability is implemented yet.';await port.close().catch(()=>{});}catch(e){if(e.name!=='NotFoundError')alert('Port selection failed: '+e.message);}};
 
+
+function refreshProfiles(){
+  const select=$('profiles'),previous=select.value;
+  select.replaceChildren();
+  const placeholder=document.createElement('option');
+  placeholder.value='';
+  placeholder.textContent='Select saved profile';
+  select.append(placeholder);
+  for(const name of Object.keys(readProfiles(profileStore())).sort()){
+    const option=document.createElement('option');
+    option.value=name;
+    option.textContent=name;
+    select.append(option);
+  }
+  if([...select.options].some(option=>option.value===previous))select.value=previous;
+}
+$('save-profile').onclick=()=>{
+  const name=prompt('Profile name (up to 50 characters):',$('profiles').value||'');
+  if(name===null)return;
+  try{
+    const key=name.trim(),existing=readProfiles(profileStore());
+    if(Object.hasOwn(existing,key)&&!confirm('Overwrite saved profile "'+key+'"?'))return;
+    saveProfile(profileStore(),key,channels);
+    refreshProfiles();
+    $('profiles').value=key;
+  }catch(e){alert(e.message);}
+};
+$('load-profile').onclick=()=>{
+  const name=$('profiles').value;
+  if(!name)return alert('Select a saved profile');
+  const saved=readProfiles(profileStore())[name];
+  if(!saved)return alert('Profile unavailable');
+  if(confirm('Replace current channels with profile "'+name+'"?')){channels=saved;render();}
+};
+$('delete-profile').onclick=()=>{
+  const name=$('profiles').value;
+  if(!name)return alert('Select a saved profile');
+  if(confirm('Delete saved profile "'+name+'"?')){
+    deleteProfile(profileStore(),name);
+    refreshProfiles();
+  }
+};
+
 const selector=$('radio-model');
 for(const item of MODELS){
   const option=document.createElement('option');
