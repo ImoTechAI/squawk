@@ -1,4 +1,5 @@
 import {normaliseChannel,parseCSV,toCSV,parseBackup} from './channels.js';
+import {readProfiles,saveProfile,deleteProfile} from './profiles.js';
 const $=id=>document.getElementById(id),key='squawk-channels-v1';let channels=[];
 try{const saved=JSON.parse(localStorage.getItem(key)||'[]');if(Array.isArray(saved))channels=saved.slice(0,1000).map(normaliseChannel);}catch{channels=[];}
 function persist(){localStorage.setItem(key,JSON.stringify(channels));$('count').textContent='('+channels.length+')';}
