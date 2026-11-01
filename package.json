@@ -1,0 +1,1 @@
+{"name":"squawk","version":"0.1.0","private":true,"type":"module","scripts":{"test":"node --test","check":"node --check app.js && node --check channels.js && node --check tests/channels.test.js"}}
