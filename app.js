@@ -1,3 +1,4 @@
+import {SDR_DIRECTORIES,searchSDR,readSDRFavorites,toggleSDRFavorite} from './sdr.js';
 import {parseRepeaterCSV,searchRepeaters,repeaterChannel} from './repeaters.js';
 import {ConnectionManager} from './connection.js';
 import {normaliseChannel,parseCSV,toCSV,parseBackup} from './channels.js';
@@ -160,3 +161,30 @@ selector.addEventListener('change',()=>{
 displayModel();
 refreshProfiles();
 render();
+
+const sdrResults=$('sdr-results');
+function renderSDR(){
+  sdrResults.replaceChildren();
+  const favorites=readSDRFavorites(localStorage);
+  const matches=searchSDR(SDR_DIRECTORIES,{query:$('sdr-query').value,type:$('sdr-type').value,favoritesOnly:$('sdr-favorites-only').checked,favorites});
+  $('sdr-count').textContent=matches.length+' directories';
+  for(const entry of matches){
+    const card=document.createElement('article');card.className='sdr-card';
+    const title=document.createElement('h3');title.textContent=entry.name;
+    const meta=document.createElement('p');meta.className='sdr-meta';meta.textContent=entry.type+' · '+entry.region;
+    const desc=document.createElement('p');desc.textContent=entry.description;
+    const actions=document.createElement('div');actions.className='actions';
+    const open=document.createElement('a');open.className='sdr-open';open.href=entry.url;open.target='_blank';open.rel='noopener noreferrer';open.textContent='Explore receivers';
+    const favorite=document.createElement('button');favorite.type='button';
+    favorite.textContent=favorites.includes(entry.id)?'★ Saved':'☆ Favourite';
+    favorite.setAttribute('aria-pressed',String(favorites.includes(entry.id)));
+    favorite.setAttribute('aria-label',(favorites.includes(entry.id)?'Remove favourite ':'Save favourite ')+entry.name);
+    favorite.onclick=()=>{toggleSDRFavorite(localStorage,entry.id);renderSDR();};
+    actions.append(open,favorite);card.append(title,meta,desc,actions);sdrResults.append(card);
+  }
+  if(!matches.length){const empty=document.createElement('p');empty.textContent='No matching SDR directories. Try a different filter.';sdrResults.append(empty);}
+}
+$('sdr-query').addEventListener('input',renderSDR);
+$('sdr-type').addEventListener('change',renderSDR);
+$('sdr-favorites-only').addEventListener('change',renderSDR);
+renderSDR();
