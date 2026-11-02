@@ -38,7 +38,9 @@ const channels=view('channels');channels.append(toolbar,editorHelp,editorTable);
 view('repeaters').append(repeater);
 view('sdr').append(sdr);
 for(const id of ['frequencies','operations','tools','academy']){
- const item=WORKSPACES.find(entry=>entry.id===id),panel=view(id),placeholder=document.createElement('div');
+ const item=WORKSPACES.find(entry=>entry.id===id),panel=view(id);
+ if(id==='operations'||id==='tools'){const mount=document.createElement('div');mount.id=id==='operations'?'range-planner':'antenna-tools';panel.append(mount);continue;}
+ const placeholder=document.createElement('div');
  placeholder.className='workspace-placeholder';
  const icon=document.createElement('span');icon.className='placeholder-icon';icon.textContent='◇';
  const label=document.createElement('span');label.className='eyebrow';label.textContent='PLANNED · NOT YET AVAILABLE';
@@ -62,6 +64,7 @@ function navigate(id,{updateHash=true}={}){
  for(const button of nav.querySelectorAll('[data-target]')){const active=button.dataset.target===selected;button.classList.toggle('active',active);if(active)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');}
  const item=WORKSPACES.find(entry=>entry.id===selected);title.textContent=item.title;subtitle.textContent=item.description;current=selected;
  if(selected==='dashboard')refreshDashboard();
+ if(selected==='operations'&&window.L){const mapElement=document.getElementById('range-map');if(mapElement&&mapElement._leaflet_id)mapElement.dispatchEvent(new Event('squawk-map-visible'));}
  if(updateHash&&window.location.hash!=='#'+selected)window.location.hash=selected;
  closeMenu();
  window.scrollTo({top:0,behavior:'instant'});
@@ -73,7 +76,7 @@ for(const item of WORKSPACES){
  const text=document.createElement('span');text.textContent=item.title;button.append(text);
  if(!item.ready){const tag=document.createElement('small');tag.textContent='SOON';button.append(tag);}
  button.addEventListener('click',()=>navigate(item.id));nav.append(button);
- if(['channels','repeaters','sdr','radios'].includes(item.id)){
+ if(['channels','repeaters','sdr','radios','operations','tools'].includes(item.id)){
   const card=document.createElement('button');card.type='button';card.className='shortcut-card';
   const name=document.createElement('strong');name.textContent=item.title;
   const description=document.createElement('span');description.textContent=item.description;
