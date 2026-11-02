@@ -64,7 +64,7 @@ $('range-calculate').onclick=async()=>{
   if(routeKm>3){detail.textContent='Not assessed: building footprints are checked only for routes up to 3 km. Terrain results remain available.';}
   else{
    try{
-    const response=await fetch('https://overpass.kumi.systems/api/interpreter',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'data='+encodeURIComponent(overpassQuery(a,b)),signal:AbortSignal.timeout(16000)});
+    const response=await fetch('https://overpass-api.de/api/interpreter',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'data='+encodeURIComponent(overpassQuery(a,b)),signal:AbortSignal.timeout(16000)});
     if(!response.ok)throw Error('OpenStreetMap building service returned '+response.status);
     const buildings=parseBuildings(await response.json());
     const assessment=assessBuildings(a,b,buildings,result);
@@ -74,7 +74,7 @@ $('range-calculate').onclick=async()=>{
     }
    }catch(error){detail.textContent='Building assessment unavailable ('+error.message+'). Building line of sight is unknown; terrain results remain available.';}
   }
-  status.textContent='Terrain profile calculated using '+samples.length+' elevation samples. Building assessment finished.';
+  status.textContent='Terrain profile calculated using '+samples.length+' elevation samples. Building check finished (estimates only).';
  }catch(error){status.textContent='Unable to calculate: '+error.message+'. Check coordinates, connection and elevation service availability.';}
  finally{button.disabled=false;}
 };
