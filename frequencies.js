@@ -1,5 +1,7 @@
 // Curated UK-oriented reference ranges; not a live allocation database or permission to transmit.
 export const FREQUENCIES=Object.freeze([
+ {name:'UK CB 27/81',start:27.60125,end:27.99125,group:'HF',service:'CB',use:'UK 40-channel Citizens Band plan',mode:'FM',note:'Reference only. Licence-exempt transmission requires compliant CB equipment; not suitable for typical VHF/UHF handhelds.'},
+ {name:'CEPT CB',start:26.965,end:27.405,group:'HF',service:'CB',use:'European 40-channel Citizens Band plan',mode:'FM',note:'Reference only. Licence-exempt transmission requires compliant CB equipment; not suitable for typical VHF/UHF handhelds.'},
  {name:'80 m amateur',start:3.5,end:3.8,group:'HF',service:'Amateur',use:'Amateur HF communications',mode:'Various',note:'Licence and band-plan conditions apply.'},
  {name:'40 m amateur',start:7,end:7.2,group:'HF',service:'Amateur',use:'Amateur HF communications',mode:'Various',note:'Licence and band-plan conditions apply.'},
  {name:'20 m amateur',start:14,end:14.35,group:'HF',service:'Amateur',use:'Long-distance amateur communications',mode:'Various',note:'Licence and band-plan conditions apply.'},
