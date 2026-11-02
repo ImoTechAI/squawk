@@ -93,3 +93,33 @@ main{max-width:none;padding:0;margin:0}
 .calculator-grid output{display:block;min-height:60px;padding:14px;border:1px solid #536949;border-radius:8px;background:#213522;color:#f2d58c;line-height:1.65}
 @media(max-width:1100px){.range-layout,.calculator-grid{grid-template-columns:1fr}.range-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.tool-form{grid-template-columns:1fr}.tool-card{padding:16px}.range-map{height:320px}.range-summary{grid-template-columns:1fr}}
+
+/* Leaflet map isolation. Keep essential tile positioning local even if CDN CSS is blocked. */
+#range-map{position:relative;overflow:hidden;isolation:isolate;max-width:100%;min-width:0;touch-action:pan-x pan-y}
+#range-map.leaflet-container{background:#17241a;outline:0}
+#range-map .leaflet-pane,
+#range-map .leaflet-tile,
+#range-map .leaflet-marker-icon,
+#range-map .leaflet-marker-shadow,
+#range-map .leaflet-tile-container,
+#range-map .leaflet-pane>svg,
+#range-map .leaflet-pane>canvas,
+#range-map .leaflet-zoom-box,
+#range-map .leaflet-image-layer,
+#range-map .leaflet-layer{position:absolute;left:0;top:0}
+#range-map .leaflet-tile,
+#range-map .leaflet-marker-icon,
+#range-map .leaflet-marker-shadow{user-select:none;-webkit-user-select:none}
+#range-map .leaflet-tile{visibility:inherit;max-width:none!important;max-height:none!important}
+#range-map .leaflet-tile-pane{z-index:200}
+#range-map .leaflet-overlay-pane{z-index:400}
+#range-map .leaflet-shadow-pane{z-index:500}
+#range-map .leaflet-marker-pane{z-index:600}
+#range-map .leaflet-tooltip-pane{z-index:650}
+#range-map .leaflet-popup-pane{z-index:700}
+#range-map .leaflet-control{position:relative;z-index:800}
+#range-map .leaflet-top,#range-map .leaflet-bottom{position:absolute;z-index:1000;pointer-events:none}
+#range-map .leaflet-top{top:0}#range-map .leaflet-bottom{bottom:0}
+#range-map .leaflet-left{left:0}#range-map .leaflet-right{right:0}
+#range-map .leaflet-top .leaflet-control,#range-map .leaflet-bottom .leaflet-control{pointer-events:auto}
+#range-map .leaflet-control-container{position:relative;z-index:1000}
