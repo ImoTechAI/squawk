@@ -5,6 +5,6 @@
   "type": "module",
   "scripts": {
     "test": "node --test",
-    "check": "node --check app.js && node --check channels.js && node --check profiles.js && node --check models.js && node --check tests/channels.test.js && node --check tests/profiles.test.js && node --check tests/models.test.js && node --check connection.js && node --check tests/connection.test.js"
+    "check": "node --check app.js && node --check channels.js && node --check profiles.js && node --check models.js && node --check tests/channels.test.js && node --check tests/profiles.test.js && node --check tests/models.test.js && node --check connection.js && node --check tests/connection.test.js && node --check repeaters.js && node --check tests/repeaters.test.js"
   }
 }
