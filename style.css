@@ -67,3 +67,29 @@ main{max-width:none;padding:0;margin:0}
  .dashboard-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
  .workspace-view .status{padding:16px}
 }
+
+/* Field planning and radio calculation workspaces */
+.tool-intro{padding:24px 28px;border:1px solid #39523a;border-radius:14px;background:linear-gradient(120deg,#1b2d1d,#101b13);margin-bottom:20px}
+.tool-intro h2{margin:10px 0;color:#f0d18e}
+.tool-intro p,.tool-muted{color:#aebfae;line-height:1.6;font-size:.86rem}
+.range-layout{display:grid;grid-template-columns:minmax(300px,1fr) minmax(340px,1.4fr);gap:16px;align-items:start}
+.tool-card{background:#142016;border:1px solid #3b513c;border-radius:13px;padding:22px;min-width:0}
+.tool-card h3{color:#e4c47e;margin:0 0 18px}
+.tool-form,.calculator-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.tool-form label,.calculator-grid label{display:flex;flex-direction:column;gap:7px;font-size:.84rem;color:#c7d6c1}
+.tool-form input,.calculator-grid input,.calculator-grid select{width:100%;min-width:0;background:#0e1911;border:1px solid #48614a;color:#fff;border-radius:7px;padding:11px}
+.tool-card>.actions{margin-top:18px}
+.range-map{height:420px;background:#17241a;border:1px solid #405941;border-radius:9px;z-index:0}
+.range-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0}
+.range-summary>div{padding:14px;background:#203024;border-radius:9px;display:flex;flex-direction:column;gap:8px}
+.range-summary span{font-size:.75rem;color:#b2c4b1}
+.range-summary strong{font-size:.94rem;overflow-wrap:anywhere}
+#range-results{margin-top:18px}
+.range-profile{overflow-x:auto}
+.range-profile svg{display:block;width:100%;max-height:280px;background:#0d1910;border:1px solid #344b37;border-radius:9px}
+.calculator-grid{grid-template-columns:repeat(3,minmax(0,1fr));align-items:start}
+.calculator-grid .tool-card{display:flex;flex-direction:column;gap:15px}
+.calculator-grid .tool-card h3{margin-bottom:0}
+.calculator-grid output{display:block;min-height:60px;padding:14px;border:1px solid #536949;border-radius:8px;background:#213522;color:#f2d58c;line-height:1.65}
+@media(max-width:1100px){.range-layout,.calculator-grid{grid-template-columns:1fr}.range-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.tool-form{grid-template-columns:1fr}.tool-card{padding:16px}.range-map{height:320px}.range-summary{grid-template-columns:1fr}}
