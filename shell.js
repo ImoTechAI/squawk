@@ -64,7 +64,7 @@ function navigate(id,{updateHash=true}={}){
  for(const button of nav.querySelectorAll('[data-target]')){const active=button.dataset.target===selected;button.classList.toggle('active',active);if(active)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');}
  const item=WORKSPACES.find(entry=>entry.id===selected);title.textContent=item.title;subtitle.textContent=item.description;current=selected;
  if(selected==='dashboard')refreshDashboard();
- if(selected==='operations'&&window.L){const mapElement=document.getElementById('range-map');if(mapElement&&mapElement._leaflet_id)mapElement.dispatchEvent(new Event('squawk-map-visible'));}
+ if(selected==='operations'){document.getElementById('range-map')?.dispatchEvent(new Event('squawk-map-visible'));}
  if(updateHash&&window.location.hash!=='#'+selected)window.location.hash=selected;
  closeMenu();
  window.scrollTo({top:0,behavior:'instant'});
