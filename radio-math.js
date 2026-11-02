@@ -39,7 +39,7 @@ export function terrainProfile(a,b,elevations,{heightA=2,heightB=2,frequencyMHz=
  const requiredEqualHeightIncreaseM=Math.max(0,-worst.clearance60);
  const radioHorizonKm=Math.sqrt(2*R*k*hA)/1000+Math.sqrt(2*R*k*hB)/1000;
  let primaryCause='clear';
- if(obstructed){primaryCause=curvatureObstructed?'curvature':'terrain';}
+ if(obstructed){primaryCause=terrainObstructed&&curvatureObstructed?'combined':curvatureObstructed?'curvature':'terrain';}
  else if(!fresnelClear){primaryCause='fresnel';}
  return {distanceKm:km,points,obstructed,fresnelClear,minimumClearanceM:worst.clearance60,
   minimumTerrainClearanceM,minimumCurvatureClearanceM,terrainObstructed,curvatureObstructed,
