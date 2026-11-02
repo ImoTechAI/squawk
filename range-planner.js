@@ -9,7 +9,7 @@ root.innerHTML=`<div class="tool-intro"><span class="eyebrow">TERRAIN & LINE OF 
 <label>Frequency (MHz)<input id="range-frequency" type="number" min="0.01" step="any" value="145.5"></label>
 </div><div class="actions"><button id="range-calculate" type="button">Calculate terrain path</button><button id="range-reset" type="button">Clear points</button></div><p class="tool-muted" id="range-status" role="status">Select two locations to begin.</p></div>
 <div class="tool-card"><h3>Map</h3><div id="range-map" class="range-map" aria-label="Interactive map for selecting two points"></div><p class="tool-muted">Map tiles: OpenStreetMap contributors. Map requires internet access. Coordinates can be entered manually if the map is unavailable.</p></div></div>
-<div id="range-results" class="tool-card" hidden aria-live="polite"><h3>Terrain path analysis</h3><div id="range-summary" class="range-summary"></div><div id="range-profile" class="range-profile"></div><p class="tool-muted">Terrain elevations: Open-Meteo elevation API (sampled). Uses an effective Earth-radius factor of 4/3, straight interpolated path and 60% of the first Fresnel zone. Elevation samples and refraction assumptions may miss obstacles, buildings and local terrain; vegetation, interference and radio performance are not modelled. Do not use for safety-critical coverage decisions.</p></div>`;
+<div id="range-results" class="tool-card" hidden aria-live="polite"><h3>Terrain path analysis</h3><div id="range-summary" class="range-summary"></div><div id="range-explanation" class="range-explanation" role="status"></div><div id="range-profile" class="range-profile"></div><p class="tool-muted">Terrain elevations: Open-Meteo elevation API (sampled). Uses an effective Earth-radius factor of 4/3, straight interpolated path and 60% of the first Fresnel zone. Elevation samples and refraction assumptions may miss obstacles, buildings and local terrain; vegetation, interference and radio performance are not modelled. Do not use for safety-critical coverage decisions.</p></div>`;
 let map=null,markers=[],line=null,next=0;
 const ids=['range-a-lat','range-a-lon','range-b-lat','range-b-lon'];
 function setPoint(lat,lon){const offset=next===0?0:2;$(ids[offset]).value=lat.toFixed(6);$(ids[offset+1]).value=lon.toFixed(6);next=1-next;updateMarkers();}
@@ -27,11 +27,11 @@ ids.forEach(id=>$(id).addEventListener('change',updateMarkers));
 $('range-reset').onclick=()=>{ids.forEach(id=>$(id).value='');next=0;updateMarkers();$('range-results').hidden=true;$('range-status').textContent='Points cleared.';};
 const fmt=(n,d=1)=>n.toFixed(d);
 function drawProfile(result){
- const el=$('range-profile');el.replaceChildren();const width=760,height=260,pad=40,pts=result.points;const vals=pts.flatMap(p=>[p.elevation,p.line,p.line+0.6*p.fresnel]);const min=Math.min(...vals)-5,max=Math.max(...vals)+5,scaleY=v=>height-pad-(v-min)/(max-min)*(height-pad*2),scaleX=i=>pad+i/(pts.length-1)*(width-pad*2);
+ const el=$('range-profile');el.replaceChildren();const width=760,height=260,pad=40,pts=result.points;const vals=pts.flatMap(p=>[p.elevation,p.effectiveTerrain,p.line,p.line-0.6*p.fresnel]);const min=Math.min(...vals)-5,max=Math.max(...vals)+5,scaleY=v=>height-pad-(v-min)/(max-min)*(height-pad*2),scaleX=i=>pad+i/(pts.length-1)*(width-pad*2);
  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 '+width+' '+height);svg.setAttribute('role','img');svg.setAttribute('aria-label','Terrain elevation profile with radio line and 60 percent Fresnel boundary');
  const path=(selector,color,stroke=3)=>{const p=document.createElementNS(svg.namespaceURI,'polyline');p.setAttribute('points',pts.map((v,i)=>scaleX(i)+','+scaleY(selector(v))).join(' '));p.setAttribute('fill','none');p.setAttribute('stroke',color);p.setAttribute('stroke-width',stroke);svg.append(p);};
- path(p=>p.elevation,'#83b485',4);path(p=>p.line,'#e4bf73');path(p=>p.line-0.6*p.fresnel,'#ec8c74',2);
- el.append(svg);const legend=document.createElement('p');legend.className='tool-muted';legend.textContent='Green: terrain · Gold: radio path · Orange: lower 60% Fresnel boundary';el.append(legend);
+ path(p=>p.elevation,'#83b485',3);path(p=>p.effectiveTerrain,'#7e9acb',2);path(p=>p.line,'#e4bf73');path(p=>p.line-0.6*p.fresnel,'#ec8c74',2);
+ el.append(svg);const legend=document.createElement('p');legend.className='tool-muted';legend.textContent='Green: sampled terrain · Blue: terrain including Earth curvature · Gold: straight radio path · Orange: lower 60% Fresnel boundary';el.append(legend);
 }
 $('range-calculate').onclick=async()=>{
  const button=$('range-calculate'),status=$('range-status');let a,b;
@@ -44,9 +44,16 @@ $('range-calculate').onclick=async()=>{
   const data=await response.json();if(!Array.isArray(data.elevation)||data.elevation.length!==samples.length)throw Error('Elevation response was incomplete');
   const result=terrainProfile(a,b,data.elevation,{heightA:Number($('range-height-a').value),heightB:Number($('range-height-b').value),frequencyMHz:Number($('range-frequency').value)});
   const summary=$('range-summary');summary.replaceChildren();
-  for(const [label,value] of [['Distance',fmt(result.distanceKm,2)+' km'],['Terrain line of sight',result.obstructed?'Obstructed':'Clear at sampled points'],['60% Fresnel clearance',result.fresnelClear?'Clear at sampled points':'Obstructed'],['Worst 60% clearance',fmt(result.minimumClearanceM)+' m']]){
+  for(const [label,value] of [['Distance',fmt(result.distanceKm,2)+' km'],['Terrain line of sight',result.obstructed?'Obstructed':'Clear at sampled points'],['60% Fresnel clearance',result.fresnelClear?'Clear at sampled points':'Obstructed'],['Worst 60% clearance',fmt(result.minimumClearanceM)+' m'],['Radio horizon (estimated)',fmt(result.radioHorizonKm,1)+' km'],['Terrain alone',result.terrainObstructed?'Obstructed':'Clear at samples'],['Curvature alone',result.curvatureObstructed?'Obstructed':'Clear at samples']]){
    const card=document.createElement('div');const name=document.createElement('span');name.textContent=label;const strong=document.createElement('strong');strong.textContent=value;card.append(name,strong);summary.append(card);
   }
+  const explanations={curvature:'Earth curvature is sufficient to block this path, even without hills. Over-water routes are not exempt from the radio horizon.',terrain:'The sampled terrain rises into the straight radio path. Higher antenna positions or a different route may help.',fresnel:'The direct path is clear at sampled points, but the first Fresnel zone does not have 60% clearance.',clear:'The sampled terrain and 60% Fresnel zone are clear under the selected assumptions.'};
+  const explanation=$('range-explanation');explanation.replaceChildren();
+  const cause=document.createElement('strong');cause.textContent='Assessment: '+({curvature:'Earth curvature',terrain:'Terrain obstruction',fresnel:'Fresnel-zone obstruction',clear:'Clear at sampled points'}[result.primaryCause]);
+  const reason=document.createElement('p');reason.textContent=explanations[result.primaryCause];
+  const height=document.createElement('p');height.textContent='Equal antenna-height increase to reach sampled 60% clearance: '+fmt(result.requiredEqualHeightIncreaseM,1)+' m at each end (approximate). Resulting heights: A '+fmt(result.suggestedHeightA,1)+' m, B '+fmt(result.suggestedHeightB,1)+' m above local ground. This is not a practical installation recommendation.';
+  const caution=document.createElement('p');caution.textContent='The radio horizon uses antenna heights above local ground and assumes a smooth Earth; elevated terrain and sea-level altitude can extend or reduce actual visibility. The curvature and terrain indicators are diagnostic approximations, not independent guarantees.';
+  explanation.append(cause,reason,height,caution);
   drawProfile(result);$('range-results').hidden=false;status.textContent='Terrain profile calculated using '+samples.length+' elevation samples.';
  }catch(error){status.textContent='Unable to calculate: '+error.message+'. Check coordinates, connection and elevation service availability.';}
  finally{button.disabled=false;}
