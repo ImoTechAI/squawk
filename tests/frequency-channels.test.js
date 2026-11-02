@@ -7,7 +7,7 @@ test('PMR446 directory contains 16 unique consecutive channels at 12.5 kHz spaci
  assert.ok(CHANNEL_DIRECTORY.length>100);
  assert.equal(CHANNEL_DIRECTORY[0].frequency,446.00625);
  assert.equal(channelsForRange('PMR446 analogue')[15].frequency,446.19375);
- assert.equal(new Set(CHANNEL_DIRECTORY.map(x=>x.id)).size,16);
+ assert.equal(new Set(CHANNEL_DIRECTORY.map(x=>x.id)).size,CHANNEL_DIRECTORY.length);
  for(let i=1;i<16;i++)assert.ok(Math.abs(CHANNEL_DIRECTORY[i].frequency-CHANNEL_DIRECTORY[i-1].frequency-0.0125)<1e-7);
 });
 test('only supported ranges have fixed channel entries',()=>{
