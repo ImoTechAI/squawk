@@ -163,3 +163,16 @@ main{max-width:none;padding:0;margin:0}
 .frequency-channel-row>button{min-width:0;width:100%;max-width:100%;white-space:normal;overflow-wrap:anywhere;line-height:1.25;box-sizing:border-box}
 .frequency-channel-row>.frequency-channel-note{grid-column:1/-1;min-width:0;overflow-wrap:anywhere;white-space:normal}
 @media(max-width:640px){.frequency-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* Radio Academy: offline learning modules and accessible quiz */
+.academy-lessons{display:grid;gap:12px}
+.academy-lesson,.academy-question{min-width:0;border:1px solid #39523a;border-radius:10px;background:#142219;padding:15px}
+.academy-lesson summary{cursor:pointer;color:#e4c47e;font-weight:700;line-height:1.5}
+.academy-lesson h4{color:#e4c47e;margin:16px 0 5px}
+.academy-lesson p{color:#c3d2c1;line-height:1.6;margin:0}
+#academy-questions{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:12px;margin:16px 0}
+.academy-question legend{color:#e4c47e;font-weight:700;padding:0 6px}
+.academy-question label{display:block;padding:8px 0;cursor:pointer;color:#d3ddd0}
+.academy-question input{accent-color:#e4c47e}
+.academy-feedback{font-size:.84rem;color:#c3d2c1;line-height:1.5}
+#academy-score{font-weight:700;color:#e4c47e}
