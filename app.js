@@ -17,6 +17,11 @@ $('export').onclick=()=>download('squawk-channels.csv',toCSV(channels),'text/csv
 $('backup').onclick=()=>download('squawk-backup.json',JSON.stringify({format:'squawk-channels-v1',channels},null,2),'application/json');
 let importType='csv';$('import').onclick=()=>{importType='csv';$('file').accept='.csv';$('file').click();};$('restore').onclick=()=>{importType='json';$('file').accept='.json';$('file').click();};
 $('file').onchange=async event=>{const file=event.target.files?.[0];if(!file)return;try{const incoming=importType==='csv'?parseCSV(await file.text()):parseBackup(await file.text());if(incoming.length>1000)throw Error('Maximum 1000 channels');if(confirm('Replace the current channel list with '+incoming.length+' imported channels?')){channels=incoming;render();}}catch(e){alert('Import failed: '+e.message);}event.target.value='';};
+document.addEventListener('squawk-add-receive-only-channel',event=>{
+ if(channels.length>=1000)return alert('Maximum 1000 channels');
+ try{const candidate=normaliseChannel({...event.detail,receiveOnly:true});channels.push(candidate);render();alert('Receive-only reference added to Channel Editor.');}
+ catch(error){alert('Unable to add channel: '+error.message);}
+});
 const diagnostics=$('diagnostic-log');
 function addDiagnostic(message){
   const entry=document.createElement('li');
