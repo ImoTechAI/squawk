@@ -7,7 +7,7 @@ export const WORKSPACES=Object.freeze([
  {id:'frequencies',title:'Frequencies',group:'Discover',description:'UK band and service frequency reference',ready:true},
  {id:'operations',title:'Operations',group:'Plan',description:'Map and terrain radio range planner',ready:true},
  {id:'tools',title:'Radio Tools',group:'Plan',description:'Antenna and RF power calculators',ready:true},
- {id:'academy',title:'Radio Academy',group:'Plan',description:'Radio guides and training',ready:false},
+ {id:'academy',title:'Radio Academy',group:'Plan',description:'Offline radio lessons and knowledge checks',ready:true},
  {id:'settings',title:'Settings',group:'System',description:'USB diagnostics and hardware status',ready:true}
 ]);
 export const DEFAULT_WORKSPACE='dashboard';
