@@ -3,7 +3,7 @@ import {FREQUENCIES,findFrequencies,frequencyLabel,receiveOnlyCandidate} from '.
 const root=document.getElementById('frequency-explorer');
 if(!root)throw Error('Frequency Explorer mount missing');
 root.innerHTML=`<div class="tool-intro"><span class="eyebrow">RADIO REFERENCE</span><h2>Frequency Explorer</h2><p>Search common UK radio bands and services. Reference information only — not a live frequency database, receiver or permission to transmit.</p></div>
-<div class="tool-card"><div class="frequency-filters"><label>Search frequency (MHz) or name<input id="frequency-query" type="search" placeholder="e.g. 145.5, amateur, aviation"></label><label>Band<select id="frequency-band"><option>All</option><option>HF</option><option>VHF</option><option>UHF</option></select></label><label>Service<select id="frequency-service"><option>All</option><option>Amateur</option><option>Broadcast</option><option>Aviation</option><option>Marine</option><option>Licence-exempt</option></select></label></div><p class="tool-muted" id="frequency-count" role="status"></p><div id="frequency-results" class="frequency-grid"></div></div>
+<div class="tool-card"><div class="frequency-filters"><label>Search frequency (MHz) or name<input id="frequency-query" type="search" placeholder="e.g. 145.5, amateur, aviation"></label><label>Band<select id="frequency-band"><option>All</option><option>HF</option><option>VHF</option><option>UHF</option></select></label><label>Service<select id="frequency-service"><option>All</option><option>Amateur</option><option>Broadcast</option><option>Aviation</option><option>Marine</option><option>Licence-exempt</option><option>CB</option></select></label></div><p class="tool-muted" id="frequency-count" role="status"></p><div id="frequency-results" class="frequency-grid"></div></div>
 <p class="tool-muted">Band boundaries are simplified UK-oriented references, not an exhaustive Ofcom allocation table. Frequency availability, licence privileges, equipment compliance and operating restrictions must be checked against current official sources. Copying a receive-only entry does not enable transmission.</p>`;
 const $=id=>document.getElementById(id);
 function render(){
@@ -27,7 +27,7 @@ function render(){
   const actions=document.createElement('div');actions.className='actions';
   const copy=document.createElement('button');copy.type='button';copy.textContent='Copy start frequency';copy.onclick=async()=>{try{await navigator.clipboard.writeText(entry.start.toFixed(5));copy.textContent='Copied';}catch{copy.textContent='Copy unavailable';}};
   actions.append(copy);
-  if(['FM','NFM'].includes(entry.mode)){
+  if(['FM','NFM'].includes(entry.mode)&&!['CB','Marine','Broadcast'].includes(entry.service)){
    const add=document.createElement('button');add.type='button';add.textContent='Add receive-only';
    add.onclick=()=>{
     try{
@@ -58,10 +58,13 @@ function render(){
     addChannel.setAttribute('aria-label','Add '+channel.name+' as receive-only');
     addChannel.onclick=()=>{
      const candidate=directoryChannelCandidate(channel);
-     if(!confirm('Add '+channel.name+' ('+candidate.rx+' MHz) as receive-only? PMR446 transmission requires compliant equipment.'))return;
+     if(!confirm('Add '+channel.name+' ('+candidate.rx+' MHz) as receive-only? Verify licence and equipment restrictions before use.'))return;
      document.dispatchEvent(new CustomEvent('squawk-add-receive-only-channel',{detail:candidate}));
     };
-    row.append(name,freq,copyChannel,addChannel);channelList.append(row);
+    row.append(name,freq,copyChannel);
+    if(channel.importable!==false&&['FM','NFM'].includes(channel.mode))row.append(addChannel);
+    const description=document.createElement('small');description.textContent=channel.note;description.className='frequency-channel-note';row.append(description);
+    channelList.append(row);
    }
    if(!channelList.children.length){const none=document.createElement('p');none.textContent='No individual channels match this search.';channelList.append(none);}
    details.append(channelList);card.append(details);
