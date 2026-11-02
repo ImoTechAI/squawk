@@ -1,7 +1,8 @@
+import {parseBuildings,assessBuildings,overpassQuery} from './building-los.js';
 import {validatePoint,interpolate,terrainProfile,distanceKm} from './radio-math.js';
 const $=id=>document.getElementById(id);
 const root=$('range-planner');if(!root)throw Error('Range planner workspace missing');
-root.innerHTML=`<div class="tool-intro"><span class="eyebrow">TERRAIN & LINE OF SIGHT</span><h2>Radio Range Planner</h2><p>Choose two map points or enter coordinates. Elevation is retrieved from Open-Meteo when you calculate. Results are estimates, not guaranteed radio coverage.</p></div>
+root.innerHTML=`<div class="tool-intro"><span class="eyebrow">TERRAIN & LINE OF SIGHT</span><h2>Radio Range Planner</h2><p>Choose two map points or enter coordinates. Elevation is retrieved from Open-Meteo. For local routes, basic building estimates use OpenStreetMap. Results are estimates, not guaranteed radio coverage.</p></div>
 <div class="range-layout"><div class="tool-card"><h3>Locations & antennas</h3><p class="tool-muted">Click the map to set point A, then B. Further clicks replace A and B in turn.</p><div class="tool-form">
 <label>Point A latitude<input id="range-a-lat" type="number" step="any" min="-90" max="90" placeholder="Latitude"></label><label>Point A longitude<input id="range-a-lon" type="number" step="any" min="-180" max="180" placeholder="Longitude"></label>
 <label>Point B latitude<input id="range-b-lat" type="number" step="any" min="-90" max="90" placeholder="Latitude"></label><label>Point B longitude<input id="range-b-lon" type="number" step="any" min="-180" max="180" placeholder="Longitude"></label>
@@ -9,12 +10,12 @@ root.innerHTML=`<div class="tool-intro"><span class="eyebrow">TERRAIN & LINE OF 
 <label>Frequency (MHz)<input id="range-frequency" type="number" min="0.01" step="any" value="145.5"></label>
 </div><div class="actions"><button id="range-calculate" type="button">Calculate terrain path</button><button id="range-reset" type="button">Clear points</button></div><p class="tool-muted" id="range-status" role="status">Select two locations to begin.</p></div>
 <div class="tool-card"><h3>Map</h3><div id="range-map" class="range-map" aria-label="Interactive map for selecting two points"></div><p class="tool-muted">Map tiles: OpenStreetMap contributors. Map requires internet access. Coordinates can be entered manually if the map is unavailable.</p></div></div>
-<div id="range-results" class="tool-card" hidden aria-live="polite"><h3>Terrain path analysis</h3><div id="range-summary" class="range-summary"></div><div id="range-explanation" class="range-explanation" role="status"></div><div id="range-profile" class="range-profile"></div><p class="tool-muted">Terrain elevations: Open-Meteo elevation API (sampled). Uses an effective Earth-radius factor of 4/3, straight interpolated path and 60% of the first Fresnel zone. Elevation samples and refraction assumptions may miss obstacles, buildings and local terrain; vegetation, interference and radio performance are not modelled. Do not use for safety-critical coverage decisions.</p></div>`;
-let map=null,markers=[],line=null,next=0;
+<div id="range-results" class="tool-card" hidden aria-live="polite"><h3>Terrain path analysis</h3><div id="range-summary" class="range-summary"></div><div id="range-explanation" class="range-explanation" role="status"></div><div id="range-buildings" class="range-explanation" role="status"></div><div id="range-profile" class="range-profile"></div><p class="tool-muted">Terrain elevations: Open-Meteo elevation API (sampled). Uses an effective Earth-radius factor of 4/3, straight interpolated path and 60% of the first Fresnel zone. Elevation samples and refraction assumptions may miss obstacles, buildings and local terrain; vegetation, interference and radio performance are not modelled. Do not use for safety-critical coverage decisions.</p></div>`;
+let map=null,markers=[],line=null,buildingLayer=null,next=0;
 const ids=['range-a-lat','range-a-lon','range-b-lat','range-b-lon'];
 function setPoint(lat,lon){const offset=next===0?0:2;$(ids[offset]).value=lat.toFixed(6);$(ids[offset+1]).value=lon.toFixed(6);next=1-next;updateMarkers();}
 function coordinates(){const values=ids.map(id=>$(id).value.trim());if(values.some(value=>value===''))throw Error('Enter both latitude and longitude for points A and B');return [{lat:Number(values[0]),lon:Number(values[1])},{lat:Number(values[2]),lon:Number(values[3])}].map(validatePoint);}
-function updateMarkers(){if(!map)return;markers.forEach(marker=>marker.remove());markers=[];if(line){line.remove();line=null;}const pts=[];for(let i=0;i<2;i++){const lat=$(ids[i*2]).value,lon=$(ids[i*2+1]).value;if(lat!==''&&lon!==''){try{const p=validatePoint({lat:Number(lat),lon:Number(lon)});pts.push([p.lat,p.lon]);markers.push(L.marker([p.lat,p.lon]).addTo(map).bindPopup('Point '+(i?'B':'A')));}catch{}}}if(pts.length===2)line=L.polyline(pts,{color:'#e4bf73',weight:3}).addTo(map);}
+function updateMarkers(){if(!map)return;markers.forEach(marker=>marker.remove());markers=[];if(line){line.remove();line=null;}if(buildingLayer){buildingLayer.remove();buildingLayer=null;}const pts=[];for(let i=0;i<2;i++){const lat=$(ids[i*2]).value,lon=$(ids[i*2+1]).value;if(lat!==''&&lon!==''){try{const p=validatePoint({lat:Number(lat),lon:Number(lon)});pts.push([p.lat,p.lon]);markers.push(L.marker([p.lat,p.lon]).addTo(map).bindPopup('Point '+(i?'B':'A')));}catch{}}}if(pts.length===2)line=L.polyline(pts,{color:'#e4bf73',weight:3}).addTo(map);}
 function initMap(){if(typeof L==='undefined'){$('range-map').textContent='Map library unavailable. Enter coordinates manually.';return;}map=L.map('range-map').setView([20,0],2);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© OpenStreetMap contributors'}).addTo(map);map.on('click',event=>setPoint(event.latlng.lat,event.latlng.lng));}
 initMap();
 const mapElement=$('range-map');
@@ -38,7 +39,8 @@ $('range-calculate').onclick=async()=>{
  try{[a,b]=coordinates();if(distanceKm(a,b)<0.01||distanceKm(a,b)>500)throw Error('Select points between 10 metres and 500 km apart');}catch(error){status.textContent=error.message;return;}
  button.disabled=true;status.textContent='Retrieving terrain elevations…';$('range-results').hidden=true;
  try{
-  const samples=interpolate(a,b,31),lat=samples.map(p=>p.lat.toFixed(5)).join(','),lon=samples.map(p=>p.lon.toFixed(5)).join(',');
+  const sampleCount=Math.min(100,Math.max(31,Math.ceil(distanceKm(a,b)*1000/100)+1));
+  const samples=interpolate(a,b,sampleCount),lat=samples.map(p=>p.lat.toFixed(5)).join(','),lon=samples.map(p=>p.lon.toFixed(5)).join(',');
   const response=await fetch('https://api.open-meteo.com/v1/elevation?latitude='+encodeURIComponent(lat)+'&longitude='+encodeURIComponent(lon),{signal:AbortSignal.timeout(15000)});
   if(!response.ok)throw Error('Elevation service returned '+response.status);
   const data=await response.json();if(!Array.isArray(data.elevation)||data.elevation.length!==samples.length)throw Error('Elevation response was incomplete');
@@ -54,7 +56,25 @@ $('range-calculate').onclick=async()=>{
   const height=document.createElement('p');height.textContent='Equal antenna-height increase to reach sampled 60% clearance: '+fmt(result.requiredEqualHeightIncreaseM,1)+' m at each end (approximate). Resulting heights: A '+fmt(result.suggestedHeightA,1)+' m, B '+fmt(result.suggestedHeightB,1)+' m above local ground. This is not a practical installation recommendation.';
   const caution=document.createElement('p');caution.textContent='The radio horizon uses antenna heights above local ground and assumes a smooth Earth; elevated terrain and sea-level altitude can extend or reduce actual visibility. The curvature and terrain indicators are diagnostic approximations, not independent guarantees.';
   explanation.append(cause,reason,height,caution);
-  drawProfile(result);$('range-results').hidden=false;status.textContent='Terrain profile calculated using '+samples.length+' elevation samples.';
+  drawProfile(result);$('range-results').hidden=false;status.textContent='Terrain profile calculated using '+samples.length+' elevation samples. Checking mapped buildings…';
+  const buildingPanel=$('range-buildings');buildingPanel.replaceChildren();
+  const heading=document.createElement('strong');heading.textContent='Basic building assessment';
+  const detail=document.createElement('p');buildingPanel.append(heading,detail);
+  const routeKm=distanceKm(a,b);
+  if(routeKm>3){detail.textContent='Not assessed: building footprints are checked only for routes up to 3 km. Terrain results remain available.';}
+  else{
+   try{
+    const response=await fetch('https://overpass-api.de/api/interpreter',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'data='+encodeURIComponent(overpassQuery(a,b)),signal:AbortSignal.timeout(16000)});
+    if(!response.ok)throw Error('OpenStreetMap building service returned '+response.status);
+    const buildings=parseBuildings(await response.json());
+    const assessment=assessBuildings(a,b,buildings,result);
+    detail.textContent=assessment.status+'. '+assessment.count+' mapped building footprint(s) cross the route; '+assessment.obstructed+' estimated obstruction(s), '+assessment.unknown+' with unknown heights. Mapped heights are used when available; storeys are estimated at 3 m each. Missing buildings and heights are possible.';
+    if(map&&assessment.hits.length){
+     buildingLayer=L.layerGroup(assessment.hits.map(hit=>L.polygon(hit.polygon.map(p=>[p.lat,p.lon]),{color:hit.status==='potential obstruction'?'#f28b73':'#e4bf73',weight:2,fillOpacity:0.18}).bindPopup('Building '+hit.id+': '+hit.heightSource+(hit.heightM===null?'':', '+fmt(hit.heightM)+' m')))).addTo(map);
+    }
+   }catch(error){detail.textContent='Building assessment unavailable ('+error.message+'). Building line of sight is unknown; terrain results remain available.';}
+  }
+  status.textContent='Terrain profile calculated using '+samples.length+' elevation samples. Building check finished (estimates only).';
  }catch(error){status.textContent='Unable to calculate: '+error.message+'. Check coordinates, connection and elevation service availability.';}
  finally{button.disabled=false;}
 };
