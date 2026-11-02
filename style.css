@@ -141,3 +141,13 @@ main{max-width:none;padding:0;margin:0}
 .frequency-card p{color:#adc0ad;line-height:1.5}
 .frequency-card .actions{margin-top:14px}
 .frequency-card button{font-size:.83rem}
+
+/* Expandable individual frequency channel directory */
+.frequency-directory{margin-top:18px;border-top:1px solid #39523a;padding-top:12px}
+.frequency-directory summary{cursor:pointer;color:#e3c178;font-weight:650;padding:8px 0}
+.frequency-channel-list{display:flex;flex-direction:column;gap:7px;margin-top:12px}
+.frequency-channel-row{display:grid;grid-template-columns:minmax(48px,.5fr) minmax(135px,1fr) auto auto;gap:8px;align-items:center;background:#19291b;border:1px solid #334936;border-radius:8px;padding:9px}
+.frequency-channel-row strong{color:#e3c178}
+.frequency-channel-row span{font-variant-numeric:tabular-nums}
+.frequency-channel-row button{padding:8px;font-size:.75rem}
+@media(max-width:640px){.frequency-channel-row{grid-template-columns:1fr 1fr}.frequency-channel-row button{width:100%}}
