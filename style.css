@@ -176,3 +176,28 @@ main{max-width:none;padding:0;margin:0}
 .academy-question input{accent-color:#e4c47e}
 .academy-feedback{font-size:.84rem;color:#c3d2c1;line-height:1.5}
 #academy-score{font-weight:700;color:#e4c47e}
+
+/* Guided Radio Academy: larger accessible type and one step at a time. */
+.academy-course{font-size:1.125rem;line-height:1.65;max-width:1100px;margin:auto}
+.academy-course h2{font-size:clamp(1.9rem,3vw,2.5rem);color:#e4c47e}
+.academy-course h3{font-size:clamp(1.6rem,2.5vw,2rem);color:#e4c47e}
+.academy-course h4{font-size:1.3rem;color:#e4c47e;margin:22px 0 8px}
+.academy-lead,.academy-reading{font-size:1.2rem;line-height:1.8;max-width:75ch}
+.academy-levels,.academy-step-nav,.academy-bottom-actions{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0}
+.academy-levels button{font-size:1.1rem;padding:12px 20px}
+.academy-levels button[aria-pressed=true],.academy-step-nav button[aria-current=step],.academy-choices button[aria-pressed=true]{background:#546c40;border-color:#e4c47e;color:white}
+.academy-course-meta,.academy-stage{border:1px solid #39523a;background:#132118;border-radius:14px;padding:clamp(18px,3vw,32px);margin:18px 0}
+.academy-course-meta progress{display:block;width:100%;height:16px;accent-color:#c6a25c}
+.academy-step-nav button{font-size:.95rem;text-align:left;white-space:normal}
+.academy-step-label{color:#e4c47e;font-weight:700}
+.academy-choices{display:grid;gap:12px;max-width:750px;margin:24px 0}
+.academy-choices button{text-align:left;font-size:1.2rem;line-height:1.5;padding:16px}
+.academy-stage>button,.academy-bottom-actions button,.academy-exam button{font-size:1.08rem;padding:12px 20px;margin:6px 8px 6px 0}
+.academy-feedback{font-size:1.2rem;line-height:1.6}
+.academy-exam-question{min-width:0;border:1px solid #39523a;border-radius:10px;margin:16px 0;padding:16px}
+.academy-exam-question legend{color:#e4c47e;font-weight:700;font-size:1.15rem}
+.academy-exam-question label{display:block;padding:10px 0;font-size:1.1rem;cursor:pointer}
+.academy-exam-question input{accent-color:#e4c47e}
+.academy-sources{font-size:1rem;line-height:1.8}
+.academy-sources a{color:#e4c47e}
+@media(max-width:640px){.academy-course{font-size:1.05rem}.academy-lead,.academy-reading{font-size:1.1rem}.academy-step-nav button{width:100%}}
