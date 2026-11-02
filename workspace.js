@@ -4,7 +4,7 @@ export const WORKSPACES=Object.freeze([
  {id:'channels',title:'Channel Editor',group:'Workspace',description:'Edit and back up channels',ready:true},
  {id:'repeaters',title:'Repeaters',group:'Discover',description:'UK CSV repeater search',ready:true},
  {id:'sdr',title:'Global SDR',group:'Discover',description:'Public online receiver directories',ready:true},
- {id:'frequencies',title:'Frequencies',group:'Discover',description:'Frequency explorer',ready:false},
+ {id:'frequencies',title:'Frequencies',group:'Discover',description:'UK band and service frequency reference',ready:true},
  {id:'operations',title:'Operations',group:'Plan',description:'Map and terrain radio range planner',ready:true},
  {id:'tools',title:'Radio Tools',group:'Plan',description:'Antenna and RF power calculators',ready:true},
  {id:'academy',title:'Radio Academy',group:'Plan',description:'Radio guides and training',ready:false},

@@ -129,3 +129,15 @@ main{max-width:none;padding:0;margin:0}
 .range-explanation strong{color:#f1d28d;font-size:1.04rem}
 .range-explanation p{color:#c1d0be;font-size:.87rem;margin:9px 0 0}
 .range-explanation p:last-child{color:#aab9a7;font-size:.79rem}
+
+/* Frequency Explorer */
+.frequency-filters{display:flex;flex-wrap:wrap;gap:14px;align-items:end;margin-bottom:14px}
+.frequency-filters label{display:flex;flex-direction:column;gap:7px;color:#d3b978;flex:1 1 180px}
+.frequency-filters input,.frequency-filters select{padding:10px;background:#101a13;color:#fff;border:1px solid #405444;border-radius:7px;width:100%}
+.frequency-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:14px;margin-top:16px}
+.frequency-card{border:1px solid #39523a;background:#131e15;border-radius:12px;padding:18px;min-width:0}
+.frequency-card h3{color:#e3c178;margin:0 0 10px}
+.frequency-card>strong{display:block;color:#eaf0e9;overflow-wrap:anywhere}
+.frequency-card p{color:#adc0ad;line-height:1.5}
+.frequency-card .actions{margin-top:14px}
+.frequency-card button{font-size:.83rem}
