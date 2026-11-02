@@ -39,7 +39,7 @@ view('repeaters').append(repeater);
 view('sdr').append(sdr);
 for(const id of ['frequencies','operations','tools','academy']){
  const item=WORKSPACES.find(entry=>entry.id===id),panel=view(id);
- if(id==='operations'||id==='tools'){const mount=document.createElement('div');mount.id=id==='operations'?'range-planner':'antenna-tools';panel.append(mount);continue;}
+ if(id==='operations'||id==='tools'||id==='frequencies'){const mount=document.createElement('div');mount.id=id==='operations'?'range-planner':id==='tools'?'antenna-tools':'frequency-explorer';panel.append(mount);continue;}
  const placeholder=document.createElement('div');
  placeholder.className='workspace-placeholder';
  const icon=document.createElement('span');icon.className='placeholder-icon';icon.textContent='◇';
@@ -76,7 +76,7 @@ for(const item of WORKSPACES){
  const text=document.createElement('span');text.textContent=item.title;button.append(text);
  if(!item.ready){const tag=document.createElement('small');tag.textContent='SOON';button.append(tag);}
  button.addEventListener('click',()=>navigate(item.id));nav.append(button);
- if(['channels','repeaters','sdr','radios','operations','tools'].includes(item.id)){
+ if(['channels','repeaters','sdr','frequencies','radios','operations','tools'].includes(item.id)){
   const card=document.createElement('button');card.type='button';card.className='shortcut-card';
   const name=document.createElement('strong');name.textContent=item.title;
   const description=document.createElement('span');description.textContent=item.description;
