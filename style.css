@@ -153,3 +153,13 @@ main{max-width:none;padding:0;margin:0}
 @media(max-width:640px){.frequency-channel-row{grid-template-columns:1fr 1fr}.frequency-channel-row button{width:100%}}
 
 .frequency-channel-note{grid-column:1/-1;color:#a8bca9;font-size:.76rem;line-height:1.35}
+
+/* Keep expanded frequency channels inside each card at every viewport width. */
+.frequency-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))}
+.frequency-grid>.frequency-card,.frequency-directory,.frequency-channel-list,.frequency-channel-row{min-width:0;max-width:100%;box-sizing:border-box}
+.frequency-directory{width:100%}
+.frequency-channel-row{grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:9px 8px}
+.frequency-channel-row>strong,.frequency-channel-row>span{min-width:0;overflow-wrap:anywhere}
+.frequency-channel-row>button{min-width:0;width:100%;max-width:100%;white-space:normal;overflow-wrap:anywhere;line-height:1.25;box-sizing:border-box}
+.frequency-channel-row>.frequency-channel-note{grid-column:1/-1;min-width:0;overflow-wrap:anywhere;white-space:normal}
+@media(max-width:640px){.frequency-grid{grid-template-columns:minmax(0,1fr)}}
