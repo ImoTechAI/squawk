@@ -1,3 +1,4 @@
+import {parseRepeaterCSV,searchRepeaters,repeaterChannel} from './repeaters.js';
 import {ConnectionManager} from './connection.js';
 import {normaliseChannel,parseCSV,toCSV,parseBackup} from './channels.js';
 import {readProfiles,saveProfile,deleteProfile} from './profiles.js';
@@ -46,6 +47,49 @@ $('disconnect').onclick=async()=>{try{await connectionManager.disconnect();}catc
 connectionManager.setState('disconnected');
 addDiagnostic('Diagnostics ready. No radio read/write commands are available.');
 
+
+
+let repeaterRows=[];
+const repeaterResults=$('repeater-results');
+function showRepeaters(){
+  repeaterResults.replaceChildren();
+  const found=searchRepeaters(repeaterRows,$('repeater-query').value,$('repeater-band').value);
+  $('repeater-count').textContent=repeaterRows.length?found.length+' matching repeaters':'Load a UK repeater CSV to search';
+  for(const repeater of found.slice(0,100)){
+    const row=document.createElement('tr');
+    const addCell=value=>{const cell=document.createElement('td');cell.textContent=String(value);row.append(cell);return cell;};
+    addCell(repeater.callsign);addCell(repeater.location||'—');
+    addCell(repeater.rx.toFixed(5));addCell(repeater.tx===null?'Not listed':repeater.tx.toFixed(5));
+    addCell(repeater.tone||'—');addCell(repeater.mode);addCell(repeater.status||'—');
+    const actions=document.createElement('td'),button=document.createElement('button');
+    button.textContent='Add channel';
+    button.disabled=!repeater.analog||repeater.tx===null;
+    button.title=button.disabled?'Requires confirmed analogue mode and input frequency':'Adds receive-only channel for review';
+    button.onclick=()=>{
+      if(channels.length>=1000)return alert('Maximum 1000 channels');
+      try{
+        const candidate=normaliseChannel(repeaterChannel(repeater));
+        if(!confirm('Add '+repeater.callsign+' as a receive-only channel? Check all settings before enabling transmission.'))return;
+        channels.push(candidate);render();
+      }catch(error){alert('Cannot import repeater: '+error.message);}
+    };
+    actions.append(button);row.append(actions);repeaterResults.append(row);
+  }
+}
+$('repeater-file-button').onclick=()=>$('repeater-file').click();
+$('repeater-file').onchange=async event=>{
+  const file=event.target.files?.[0];if(!file)return;
+  try{
+    if(file.size>2_000_000)throw Error('CSV must be under 2 MB');
+    const parsed=parseRepeaterCSV(await file.text());
+    repeaterRows=parsed;showRepeaters();
+    $('repeater-message').textContent='Loaded '+parsed.length+' records from '+file.name+'. Verify current data with the source.';
+  }catch(error){$('repeater-message').textContent='Import failed: '+error.message;}
+  event.target.value='';
+};
+$('repeater-query').addEventListener('input',showRepeaters);
+$('repeater-band').addEventListener('change',showRepeaters);
+showRepeaters();
 
 function refreshProfiles(){
   const select=$('profiles'),previous=select.value;
