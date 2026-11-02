@@ -16,7 +16,7 @@ function setPoint(lat,lon){const offset=next===0?0:2;$(ids[offset]).value=lat.to
 function coordinates(){const values=ids.map(id=>$(id).value.trim());if(values.some(value=>value===''))throw Error('Enter both latitude and longitude for points A and B');return [{lat:Number(values[0]),lon:Number(values[1])},{lat:Number(values[2]),lon:Number(values[3])}].map(validatePoint);}
 function updateMarkers(){if(!map)return;markers.forEach(marker=>marker.remove());markers=[];if(line){line.remove();line=null;}const pts=[];for(let i=0;i<2;i++){const lat=$(ids[i*2]).value,lon=$(ids[i*2+1]).value;if(lat!==''&&lon!==''){try{const p=validatePoint({lat:Number(lat),lon:Number(lon)});pts.push([p.lat,p.lon]);markers.push(L.marker([p.lat,p.lon]).addTo(map).bindPopup('Point '+(i?'B':'A')));}catch{}}}if(pts.length===2)line=L.polyline(pts,{color:'#e4bf73',weight:3}).addTo(map);}
 function initMap(){if(typeof L==='undefined'){$('range-map').textContent='Map library unavailable. Enter coordinates manually.';return;}map=L.map('range-map').setView([20,0],2);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© OpenStreetMap contributors'}).addTo(map);map.on('click',event=>setPoint(event.latlng.lat,event.latlng.lng));}
-initMap();ids.forEach(id=>$(id).addEventListener('change',updateMarkers));
+initMap();$('range-map').addEventListener('squawk-map-visible',()=>{if(map)requestAnimationFrame(()=>map.invalidateSize());});ids.forEach(id=>$(id).addEventListener('change',updateMarkers));
 $('range-reset').onclick=()=>{ids.forEach(id=>$(id).value='');next=0;updateMarkers();$('range-results').hidden=true;$('range-status').textContent='Points cleared.';};
 const fmt=(n,d=1)=>n.toFixed(d);
 function drawProfile(result){
