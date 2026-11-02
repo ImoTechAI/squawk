@@ -6,3 +6,64 @@
 .repeater-search{margin-top:18px}.repeater-head{margin-bottom:14px}.repeater-source{display:inline-flex;align-items:center;color:#e3c178;border:1px solid #6e8657;border-radius:7px;padding:10px 14px;text-decoration:none}.repeater-source:hover{background:#263a29}.repeater-filters{display:flex;align-items:end;flex-wrap:wrap;gap:14px;margin:14px 0}.repeater-filters label{display:flex;flex-direction:column;gap:6px;color:#d3b978}.repeater-filters input,.repeater-filters select{padding:10px;background:#101a13;color:white;border:1px solid #405444;border-radius:7px}.repeater-message{color:#adc0ad;font-size:.88rem}.repeater-search .table-wrap{max-height:400px;overflow:auto}.repeater-search td{white-space:nowrap}.repeater-search h2{margin:0 0 8px}
 
 .sdr-section{margin-top:26px}.sdr-label{font-size:.75rem;letter-spacing:.08em;color:#e3c178}.sdr-filters{display:flex;flex-wrap:wrap;align-items:end;gap:14px;margin:18px 0}.sdr-filters label{display:flex;flex-direction:column;gap:6px;color:#d3b978}.sdr-filters input:not([type=checkbox]),.sdr-filters select{padding:10px;background:#101a13;color:#fff;border:1px solid #405444;border-radius:7px}.sdr-filters .sdr-check{flex-direction:row;align-items:center;padding-bottom:9px}.sdr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}.sdr-card{border:1px solid #39523a;background:#131e15;border-radius:12px;padding:18px}.sdr-card h3{margin:0 0 7px;color:#e3c178}.sdr-card p{color:#adc0ad;line-height:1.5}.sdr-card .sdr-meta{font-size:.8rem;color:#e3c178}.sdr-open{display:inline-flex;align-items:center;text-decoration:none;padding:10px 14px;border:1px solid #6e8657;border-radius:7px;color:#f5f7f3;background:#263a29;font-weight:600}.sdr-open:hover{background:#3b593e}.sdr-disclaimer{font-size:.85rem;color:#adc0ad;line-height:1.5}
+
+/* Workspace shell: legacy feature controls remain mounted, only one view is visible. */
+[hidden]{display:none!important}
+body{min-height:100vh}
+header{padding:12px 24px;position:relative;z-index:2}
+header img{width:56px;height:56px}
+header h1{font-size:1.45rem}
+header p{font-size:.65rem}
+main{max-width:none;padding:0;margin:0}
+.app-shell{display:grid;grid-template-columns:230px minmax(0,1fr);min-height:calc(100vh - 82px)}
+.app-sidebar{background:#101a12;border-right:1px solid #334936;padding:22px 12px;min-width:0}
+.sidebar-brand{font-size:1rem;font-weight:800;letter-spacing:.16em;color:#e6c47b;padding:4px 12px 24px}
+.workspace-nav{display:flex;flex-direction:column;gap:4px}
+.nav-group{padding:20px 12px 8px;font-size:.68rem;letter-spacing:.13em;text-transform:uppercase;color:#889b86}
+.nav-link{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;padding:12px 13px;background:transparent;border:1px solid transparent;border-radius:9px;font-weight:550;color:#b9c9b7}
+.nav-link:hover{background:#203123}
+.nav-link.active{background:#293d2b;border-color:#547048;color:#f2d28c}
+.nav-link small{font-size:.58rem;letter-spacing:.06em;color:#9dac96}
+.workspace-content{min-width:0;padding:24px clamp(16px,3vw,46px)}
+.workspace-topbar{display:flex;align-items:center;gap:20px;justify-content:space-between;border-bottom:1px solid #344535;padding-bottom:18px;margin-bottom:26px}
+.workspace-heading h2{margin:0;color:#f1e5ca;font-size:1.5rem}
+.workspace-heading p{margin:5px 0 0;color:#a9bba8;font-size:.86rem}
+.workspace-chip{font-size:.7rem;color:#e3c178;white-space:nowrap}
+.workspace-view{min-width:0;animation:workspace-appear .15s ease-out}
+@keyframes workspace-appear{from{opacity:.7;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+.workspace-view .toolbar{margin-top:0}
+.workspace-view .sdr-section,.workspace-view .repeater-search{margin-top:0}
+.workspace-view .diagnostics{margin-top:18px}
+.workspace-view .status+.status{margin-top:18px}
+.dashboard-intro{border:1px solid #3b523a;background:linear-gradient(125deg,#203622,#101a13);border-radius:16px;padding:clamp(22px,4vw,44px)}
+.eyebrow{display:block;font-size:.72rem;letter-spacing:.14em;color:#d7b976;font-weight:700}
+.dashboard-intro h2{font-size:clamp(1.5rem,3vw,2.3rem);margin:12px 0}
+.dashboard-intro p{max-width:720px;line-height:1.65;color:#b7c8b4}
+.dashboard-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0 28px}
+.stat-card{display:flex;flex-direction:column;gap:12px;padding:18px;border:1px solid #354b37;border-radius:12px;background:#152218;min-width:0}
+.stat-card span{font-size:.78rem;color:#aebfae}
+.stat-card strong{font-size:1.15rem;overflow-wrap:anywhere}
+.dashboard-shortcuts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.shortcut-card{display:flex;flex-direction:column;align-items:start;gap:9px;padding:24px;text-align:left;background:#18271a;border-color:#3e583d}
+.shortcut-card strong{font-size:1.1rem;color:#e6c47b}
+.shortcut-card span{color:#b2c2ae;font-weight:400}
+.workspace-placeholder{display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;padding:70px 20px;border:1px dashed #496247;border-radius:14px;background:#121d14}
+.placeholder-icon{font-size:3rem;color:#d6b36d}
+.workspace-placeholder h2{margin:0}
+.workspace-placeholder p{max-width:470px;line-height:1.6;color:#aebfae}
+.mobile-menu{display:none}
+.nav-backdrop{display:none}
+@media(max-width:1050px){.dashboard-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){
+ .app-shell{display:block}
+ .app-sidebar{position:fixed;z-index:20;left:0;top:0;bottom:0;width:min(290px,84vw);overflow:auto;transform:translateX(-105%);transition:transform .18s ease;box-shadow:8px 0 28px #0007}
+ .app-sidebar.is-open{transform:translateX(0)}
+ .nav-backdrop:not([hidden]){display:block;position:fixed;inset:0;z-index:19;background:#0009;border:0;border-radius:0}
+ .workspace-content{padding:18px 14px}
+ .workspace-topbar{gap:12px;flex-wrap:wrap}
+ .mobile-menu{display:inline-flex}
+ .workspace-chip{width:100%;font-size:.64rem}
+ .dashboard-shortcuts{grid-template-columns:1fr}
+ .dashboard-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .workspace-view .status{padding:16px}
+}
