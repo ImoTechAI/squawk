@@ -123,3 +123,9 @@ main{max-width:none;padding:0;margin:0}
 #range-map .leaflet-left{left:0}#range-map .leaflet-right{right:0}
 #range-map .leaflet-top .leaflet-control,#range-map .leaflet-bottom .leaflet-control{pointer-events:auto}
 #range-map .leaflet-control-container{position:relative;z-index:1000}
+
+/* Range diagnostics: distinguish causes and height assumptions. */
+.range-explanation{margin:16px 0;padding:18px 20px;border:1px solid #6c7145;border-left:4px solid #e4bf73;border-radius:9px;background:#1b291d;line-height:1.6}
+.range-explanation strong{color:#f1d28d;font-size:1.04rem}
+.range-explanation p{color:#c1d0be;font-size:.87rem;margin:9px 0 0}
+.range-explanation p:last-child{color:#aab9a7;font-size:.79rem}
