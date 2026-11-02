@@ -22,7 +22,7 @@ test('open-water long path is blocked by curvature with low antennas',()=>{
 });
 test('short sea path can clear Fresnel zone with adequate antenna heights',()=>{
  const a={lat:0,lon:0},b={lat:0,lon:0.005};
- const p=terrainProfile(a,b,Array(31).fill(0),{heightA:10,heightB:10,frequencyMHz:145});
+ const p=terrainProfile(a,b,Array(31).fill(0),{heightA:20,heightB:20,frequencyMHz:145});
  assert.equal(p.primaryCause,'clear');
  assert.equal(p.fresnelClear,true);
  near(p.requiredEqualHeightIncreaseM,0);
